@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Gender and Age Detection</title>
+</head>
+
+<body>
+    <div class="container">
+        <header class="border border-dark text-center">
+            <h3 class="font-weight-bold p-3 mb-0" style="background-color: darkgray;">Gender and Age Detection</h3>
+        </header>
+        <main class="px-3">
+            <div class="row">
+                <div class="main col-sm-8 border border-dark" style="background-color: gainsboro;">
+                    <form id="myForm" action="/" method="POST" enctype="multipart/form-data">
+                        <div class="bg-white mt-3 border border-dark text-center p-3" id="divImg">
+                            <img src="{{ url_for('display_image', filename=imgFile) }}" style="min-height: 300px; max-height: 500px; max-width: 100%;" id="img" alt="">
+                        </div>
+                        <div class="text-center p-3">
+                            <button type="button" class="btn btn-success">Sample</button>
+                            <button type="button" class="btn btn-success mx-2" id="webcam">Webcam</button>
+                            <label for="upload" class="btn btn-success mt-2">Upload</label>
+                            <input type="file" id="upload" name="file" accept="image/png, image/jpeg"
+                                class="btn btn-success d-none" autocomplete="off" required/>
+                        </div>
+                    </form>
+                </div>
+                <div class="results col-sm-4 border border-dark p-0 position-relative">
+                    <div class="bg-dark pl-3 pt-1 w-100" style="height: 50px;">
+                        <h3 class="text-light">Results</h3>
+                    </div>
+                    <div>
+                        <div class="m-3 divFaceImg d-inline-block">
+                            <img src="{{ url_for('display_image', filename=faceFile) }}"
+                                height="70" class="rounded" style="max-width: 100%;" id="faceImg" alt="">
+                        </div>
+                        <form action="/next_face" class="d-inline-block">
+                            <button type="submit" id="nextFace" class="btn btn-outline-dark btn-sm rounded-100">
+                                >
+                            </button>
+                        </form>
+                    </div>
+                    <div class="attribute">
+                        <div class="row mt-3 px-3">
+                            <div class="col-6 text-left font-weight-bold" style="font-size: 18px;">
+                                Gender
+                            </div>
+                            <div class="col-6 text-right" id="gender">
+                                {{gender}}
+                            </div>
+                        </div>
+                        <div class="row mt-2 px-3">
+                            <div class="col-6 text-left font-weight-bold" style="font-size: 18px;">
+                                Age
+                            </div>
+                            <div class="col-6 text-right" id="age">
+                                {{age}}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 100%; text-align: center; position: absolute; bottom: 1.5rem;"
+                        class="scrollingContainer">
+                        <button type="button" id="btnDetect" class="btn btn-primary">Detect</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const validImageTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+
+        document.getElementById("upload").onchange = function (event) {
+            if (FileReader && validImageTypes.includes(this.files[0]["type"])) {
+                
+                var fr = new FileReader();
+                fr.onload = function () {
+                    document.getElementById("img").src = fr.result;
+                    document.getElementById("faceImg").src = fr.result;
+                }
+                fr.readAsDataURL(this.files[0]);
+            } else {
+                return
+            }
+
+            document.getElementById("gender").innerText = "unknown"
+            document.getElementById("age").innerText = "unknown"
+
+            document.getElementById("btnDetect").onclick = function () {
+                document.getElementById("myForm").submit()
+            }
+        }
+
+        document.getElementById("webcam").onclick = function () {
+            document.getElementById("myForm").setAttribute("action", "/webcam")
+            document.getElementById("myForm").submit()
+        }
+    </script>
+</body>
+
+</html>
